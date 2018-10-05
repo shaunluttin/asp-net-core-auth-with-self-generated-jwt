@@ -26,32 +26,32 @@ namespace server
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            var key = Encoding.ASCII.GetBytes("this-is-the-secret");
-            services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(x =>
+        var key = Encoding.ASCII.GetBytes("this-is-the-secret");
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.RequireHttpsMetadata = false;
-                    x.SaveToken = true;
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        // 
-                        ValidIssuer = "my-auth-server",
-                        ValidateIssuer = true,
-                        // 
-                        ValidAudience = "my-resource-server",
-                        ValidateAudience = true,
-                        //
-                        ValidateLifetime = true,
-                    };
-                });
-        }
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuerSigningKey = true,
+                    // 
+                    ValidIssuer = "my-auth-server",
+                    ValidateIssuer = false,
+                    // 
+                    ValidAudience = "my-resource-server",
+                    ValidateAudience = true,
+                    //
+                    ValidateLifetime = true,
+                };
+            });
+    }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

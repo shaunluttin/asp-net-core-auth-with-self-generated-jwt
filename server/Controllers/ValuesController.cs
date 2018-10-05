@@ -12,40 +12,36 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace server.Controllers
 {
-    [ApiController]
     public class ValuesController : ControllerBase
     {
-        // GET api/values
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("/api/values")]
-        public ActionResult<IEnumerable<string>> Get()
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public ActionResult<string> Values()
         {
-            return new string[] { "value1", "value2" };
+            return $"You have authorized access";
         }
 
         [HttpGet("/api/jwt")]
         public ActionResult<string> Jwt()
         {
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("this-is-the-secret"));
             var descriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity("shaun"),
+                Subject = new ClaimsIdentity(new Claim[] { /* add claims */}),
                 Issuer = "my-auth-server",
                 Audience = "my-resource-server",
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes("this-is-the-secret")),
-                    SecurityAlgorithms.HmacSha256Signature),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
                 IssuedAt = DateTime.Now,
                 NotBefore = DateTime.Now,
                 Expires = DateTime.Now.AddDays(1)
             };
 
             var jwtHandler = new JwtSecurityTokenHandler();
-
-            // var jwt = jwtHandler.CreateEncodedJwt(descriptor);
             var token = jwtHandler.CreateToken(descriptor);
-            var jwt = jwtHandler.WriteToken(token);
+            return jwtHandler.WriteToken(token);
 
-            return jwt;
+            // alternatively
+            // return jwtHandler.CreateEncodedJwt(descriptor);
         }
     }
 }
