@@ -30,7 +30,8 @@ namespace server.Controllers
                 Subject = new ClaimsIdentity(new Claim[] { /* add claims */}),
                 Issuer = "my-auth-server",
                 Audience = "my-resource-server",
-                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
+                SigningCredentials =
+                    new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
                 IssuedAt = DateTime.Now,
                 NotBefore = DateTime.Now,
                 Expires = DateTime.Now.AddDays(1)
